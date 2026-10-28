@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hartă de observație</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- vederea first person -->
+  <div id="view">
+    <img id="photoBg" alt="">
+    <img class="frame" id="frameA" alt="">
+    <img class="frame" id="frameB" alt="">
+    <img id="pairImg" alt="">
+    <div id="satmap"></div>
+    <img id="overlay" alt="">
+    <div id="vignette"></div>
+  </div>
+
+  <div id="subtitle"></div>
+  <div id="nowplaying"></div>
+
+  <!-- cartonaș moment -->
+  <div id="card" class="hidden">
+    <div class="card-inner">
+      <div class="card-head">
+        <span class="card-num"></span>
+        <h2 class="card-title"></h2>
+      </div>
+      <div class="card-media"></div>
+      <p class="card-text"></p>
+      <div class="card-foot"><span class="card-timer"></span><button id="cardNext">continuă →</button></div>
+    </div>
+  </div>
+
+  <!-- minihartă + hartă mare -->
+  <div id="minimap"></div>
+  <button id="mapToggle" title="Harta mare (M)">hartă</button>
+
+  <!-- apariții: poze și texte puse după timp (config.js → aparitii) -->
+  <div id="aparitii"></div>
+
+  <!-- bara de control -->
+  <div id="controls">
+    <button id="playBtn" title="Play / pauză (spațiu)">▶</button>
+    <div id="scrub"><div id="scrubFill"></div><div id="scrubTicks"></div></div>
+    <span id="distLabel">0:00</span>
+    <button id="galleryBtn" class="txt" title="Alege cadrele ținute mai mult (G)">cadre</button>
+    <button id="muteBtn" title="Sunet (S)">♪</button>
+    <button id="fsBtn" title="Ecran complet (F)">⛶</button>
+  </div>
+
+  <!-- ecran de început -->
+  <div id="intro">
+    <div class="intro-inner">
+      <h1 id="introTitle"></h1>
+      <p id="introSub"></p>
+      <button id="startBtn">pornește plimbarea</button>
+      <p id="introNote" class="note"></p>
+      <p class="keys">spațiu — play/pauză · ← → — sari între momente · G — alege cadre · C — copiază timpul curent · M — hartă · S — sunet · F — ecran complet<br>Shift+click pe hartă — afli metrul/coordonatele unui punct (pentru config.js)</p>
+    </div>
+  </div>
+
+  <!-- alegerea cadrelor lungi -->
+  <div id="gallery" class="hidden">
+    <div class="gal-head">
+      <div>
+        <h2>Cadrele filmului</h2>
+        <p id="galInfo"></p>
+      </div>
+      <div class="gal-actions">
+        <button id="galCopy">copiază pentru config.js</button>
+        <button id="galReset">resetează</button>
+        <button id="galClose">închide</button>
+      </div>
+    </div>
+    <p class="gal-help">Click pe o imagine ca s-o ții mai mult pe ecran; click din nou ca s-o scoți. Restul cadrelor se redistribuie singure ca filmul să rămână de aceeași lungime.</p>
+    <div id="galGrid"></div>
+  </div>
+
+  <div id="lightbox" class="hidden"><img alt=""></div>
+  <div id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="route.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

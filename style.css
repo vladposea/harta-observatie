@@ -1,0 +1,294 @@
+:root {
+  --paper: #f4ede0;
+  --ink: #2b2420;
+  --ink-soft: #6d6157;
+  --accent: #c2410c;
+  --route: #c2410c;
+  --glass: rgba(24, 20, 17, 0.62);
+  --hand: "Caveat", "Bradley Hand", cursive;
+  --serif: "Fraunces", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: #111; color: var(--paper);
+  font-family: var(--serif);
+}
+button { font: inherit; cursor: pointer; }
+
+/* ---------- vederea ---------- */
+#view { position: fixed; inset: 0; overflow: hidden; background: #1a1714; }
+.frame {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0;
+  transition: opacity 1.2s ease;
+  transform-origin: 50% 46%;
+  will-change: transform, opacity;
+}
+.frame.on { opacity: 1; }
+.frame.photo { object-fit: contain; }
+#photoBg {
+  position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px);
+  object-fit: cover; filter: blur(28px) brightness(0.55);
+  opacity: 0; transition: opacity 1.2s ease;
+}
+#photoBg.on { opacity: 1; }
+/* poză + desen alăturate: poza în stânga, desenul în dreapta */
+/* (lasă liberă coloana din dreapta, cu harta) */
+.frame.pair { width: calc(50vw - 145px); transform-origin: 75% 50%; object-position: right center; padding: 6vh 1.5vw 12vh 3vw; }
+#pairImg {
+  position: absolute; left: calc(50vw - 145px); top: 0; width: calc(50vw - 145px); height: 100%;
+  padding: 6vh 3vw 12vh 1.5vw; object-fit: contain; object-position: left center;
+  opacity: 0; transition: opacity 1.2s ease; pointer-events: none;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+}
+#pairImg.on { opacity: 1; }
+#satmap { position: absolute; inset: 0; display: none; filter: saturate(0.85) contrast(1.05); }
+body.nokey #satmap { display: block; }
+body.nokey .frame { display: none; }
+#overlay {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; opacity: 0; pointer-events: none;
+  mix-blend-mode: multiply; transition: opacity 1.2s ease;
+}
+#overlay.on { opacity: 0.9; }
+#vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0,0,0,0.45) 100%);
+}
+
+/* ---------- subtitlu + muzică ---------- */
+#subtitle {
+  position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
+  max-width: min(820px, calc(100vw - 32px));
+  font-family: var(--hand); font-size: clamp(26px, 3.2vw, 40px); line-height: 1.15;
+  text-align: center; color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,0.9);
+  opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
+}
+#subtitle.on { opacity: 1; }
+#nowplaying {
+  position: fixed; left: 16px; top: 16px;
+  font-size: 13px; letter-spacing: 0.02em;
+  background: var(--glass); backdrop-filter: blur(6px);
+  padding: 7px 12px; border-radius: 20px;
+  opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
+}
+#nowplaying.on { opacity: 1; }
+#nowplaying i { font-style: normal; color: #f6c69a; }
+
+/* ---------- cartonaș ---------- */
+#card {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: 16px 16px 88px; pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+#card.hidden { opacity: 0; }
+#card.hidden .card-inner { transform: translateY(18px) rotate(-0.6deg); }
+.card-inner {
+  pointer-events: auto;
+  width: min(960px, 100%); max-height: 100%; overflow: auto;
+  background: var(--paper); color: var(--ink);
+  border-radius: 4px; padding: 22px 26px 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.05);
+  transform: rotate(-0.6deg);
+  transition: transform 0.6s ease;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(43,36,32,0.06) 31px 32px);
+}
+#card.hidden .card-inner { pointer-events: none; }
+.card-head { display: flex; align-items: baseline; gap: 12px; }
+.card-num { font-family: var(--hand); font-size: 30px; color: var(--accent); }
+.card-title { margin: 0; font-weight: 600; font-size: 26px; }
+.card-media { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 14px 0 4px; }
+.card-media:empty { display: none; }
+.card-media img {
+  height: var(--ph, 220px); max-width: 100%; object-fit: cover; flex: none;
+  border: 6px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  cursor: zoom-in;
+}
+.card-media img:nth-child(2n) { transform: rotate(1.2deg); }
+.card-media img:nth-child(2n+1) { transform: rotate(-1deg); }
+.card-media img.desen { border-color: #fbf8f1; background: #fbf8f1; object-fit: contain; }
+.card-text {
+  font-family: var(--hand); font-size: 28px; line-height: 1.2;
+  margin: 12px 0 8px; white-space: pre-line;
+}
+.card-foot { display: flex; justify-content: space-between; align-items: center; color: var(--ink-soft); font-size: 13px; }
+#cardNext {
+  background: none; border: 1px solid var(--ink-soft); color: var(--ink);
+  padding: 5px 14px; border-radius: 16px;
+}
+#cardNext:hover { background: var(--ink); color: var(--paper); }
+
+/* ---------- minihartă ---------- */
+#minimap {
+  position: fixed; right: 16px; top: 16px;
+  width: 260px; height: 260px; border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+  border: 3px solid var(--paper);
+  transition: all 0.6s ease; z-index: 5;
+}
+body.bigmap #minimap { width: calc(100vw - 32px); height: calc(100vh - 104px); }
+#minimap .leaflet-tile-pane { filter: sepia(0.35) saturate(0.8) brightness(1.02); }
+#mapToggle {
+  position: fixed; right: 22px; top: 248px; z-index: 6;
+  background: var(--paper); color: var(--ink); border: 0;
+  font-family: var(--hand); font-size: 19px; padding: 0 10px; border-radius: 10px;
+  transition: top 0.6s ease;
+}
+body.bigmap #mapToggle { top: calc(100vh - 124px); }
+/* ---------- apariții (poze și texte după timp) ---------- */
+#aparitii { position: fixed; top: 16px; left: 16px; right: 16px; bottom: 84px; z-index: 4; pointer-events: none; }
+body.bigmap #aparitii { opacity: 0; }
+.ap {
+  position: absolute; opacity: 0; transition: opacity 0.9s ease;
+  display: flex; flex-direction: column; width: fit-content;
+}
+.ap.on { opacity: 1; }
+.ap-caption { white-space: pre-line; }
+.ap-photo { background: #fff; padding: 8px 8px 6px; box-shadow: 0 8px 30px rgba(0,0,0,0.45); }
+.ap-photo.on { pointer-events: auto; }
+.ap-photo img { display: block; max-width: min(34vw, 440px); max-height: 42vh; cursor: zoom-in; }
+.ap-photo .ap-caption {
+  width: 0; min-width: 100%; color: var(--ink);
+  font-family: var(--hand); font-size: 21px; line-height: 1.1; padding-top: 5px;
+}
+.ap-text .ap-caption {
+  max-width: min(46vw, 620px); color: #fff;
+  font-family: var(--hand); font-size: clamp(24px, 2.8vw, 36px); line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.9);
+}
+.pos-stanga-sus  { top: 0; left: 0; }
+.pos-sus         { top: 0; left: 50%; transform: translateX(-50%); text-align: center; }
+.pos-dreapta-sus { top: 0; right: 276px; text-align: right; }
+.pos-stanga      { top: 50%; left: 0; transform: translateY(-50%); }
+.pos-centru      { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.pos-dreapta     { top: 272px; right: 0; text-align: right; }   /* sub hartă */
+.pos-stanga-jos  { bottom: 0; left: 0; }
+.pos-jos         { bottom: 0; left: 50%; transform: translateX(-50%); text-align: center; }
+.pos-dreapta-jos { bottom: 0; right: 0; text-align: right; }
+.pos-dreapta.ap-photo img { max-width: 244px; max-height: max(140px, calc(100vh - 430px)); }
+
+.walker {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgba(194,65,12,0.25);
+}
+.stop-pin {
+  font-family: var(--hand); font-size: 18px; line-height: 22px; text-align: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--paper); color: var(--ink); border: 2px solid var(--ink);
+}
+.stop-pin.walk { width: 12px; height: 12px; background: var(--ink); border-color: var(--paper); }
+.leaflet-tooltip.stop-tip { font-family: var(--serif); font-size: 13px; }
+
+/* ---------- control ---------- */
+#controls {
+  position: fixed; left: 16px; right: 16px; bottom: 16px; height: 52px;
+  display: flex; align-items: center; gap: 10px; padding: 0 14px;
+  background: var(--glass); backdrop-filter: blur(8px); border-radius: 26px;
+  z-index: 7; transition: opacity 0.5s;
+}
+body.idle #controls { opacity: 0.15; }
+#controls button {
+  background: none; border: 0; color: var(--paper);
+  min-width: 30px; height: 30px; border-radius: 15px; font-size: 17px;
+}
+#controls button:hover { background: rgba(255,255,255,0.12); }
+#controls button.off { opacity: 0.4; }
+#scrub { position: relative; flex: 1; height: 26px; cursor: pointer; }
+#scrub::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 12px; height: 2px;
+  background: rgba(255,255,255,0.25);
+}
+#scrubFill { position: absolute; left: 0; top: 11px; height: 4px; background: var(--accent); border-radius: 2px; }
+#scrubTicks span {
+  position: absolute; top: 7px; width: 2px; height: 12px; background: var(--paper);
+  transform: translateX(-1px);
+}
+#scrubTicks span.walk { top: 10px; height: 6px; opacity: 0.6; }
+#scrubTicks span.hold { top: 9px; height: 8px; width: 6px; border-radius: 2px; background: #f6c69a; transform: translateX(-3px); }
+#distLabel { font-size: 13px; min-width: 76px; text-align: center; font-variant-numeric: tabular-nums; }
+#controls button.txt { font-family: var(--hand); font-size: 19px; padding: 0 8px; }
+
+/* ---------- alegerea cadrelor ---------- */
+#gallery {
+  position: fixed; inset: 0; z-index: 25; overflow: auto;
+  background: var(--paper); color: var(--ink);
+  padding: 20px 16px 40px; transition: opacity 0.3s;
+}
+#gallery.hidden { opacity: 0; pointer-events: none; }
+.gal-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; max-width: 1200px; margin: 0 auto; }
+.gal-head h2 { margin: 0; font-weight: 600; }
+#galInfo { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; }
+.gal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.gal-actions button {
+  background: none; border: 1px solid var(--ink-soft); color: var(--ink);
+  padding: 6px 14px; border-radius: 16px; font-size: 14px;
+}
+.gal-actions button:hover { background: var(--ink); color: var(--paper); }
+.gal-help { max-width: 1200px; margin: 10px auto 18px; font-family: var(--hand); font-size: 22px; color: var(--ink-soft); }
+#galGrid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+}
+.gal-item { cursor: pointer; position: relative; }
+.gal-item img {
+  width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block;
+  background: #ddd3c2; border: 4px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.gal-item .lbl { font-size: 12px; color: var(--ink-soft); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.gal-item.hold img { border-color: var(--accent); }
+.gal-item.hold::after {
+  content: attr(data-hold); position: absolute; top: 10px; left: 10px;
+  background: var(--accent); color: #fff; font-size: 13px; padding: 2px 8px; border-radius: 10px;
+}
+.gal-item.stop { cursor: default; display: grid; place-items: center; aspect-ratio: 16 / 10; border: 2px dashed var(--ink-soft); color: var(--ink-soft); font-family: var(--hand); font-size: 22px; text-align: center; padding: 8px; }
+
+/* ---------- intro ---------- */
+#intro {
+  position: fixed; inset: 0; z-index: 20;
+  display: grid; place-items: center; padding: 16px;
+  background: rgba(20,17,14,0.72); backdrop-filter: blur(4px);
+  transition: opacity 0.8s ease;
+}
+#intro.gone { opacity: 0; pointer-events: none; }
+.intro-inner { max-width: 620px; text-align: center; }
+#introTitle { font-weight: 400; font-size: clamp(34px, 6vw, 60px); margin: 0 0 8px; }
+#introSub { font-family: var(--hand); font-size: 26px; margin: 0 0 28px; color: #f6c69a; }
+#startBtn {
+  background: var(--paper); color: var(--ink); border: 0;
+  padding: 12px 28px; border-radius: 28px; font-size: 18px;
+}
+#startBtn:hover { background: #fff; }
+.note { color: #f6c69a; font-size: 14px; }
+.keys { color: rgba(244,237,224,0.6); font-size: 13px; line-height: 1.7; margin-top: 26px; }
+
+/* ---------- lightbox, toast ---------- */
+#lightbox {
+  position: fixed; inset: 0; z-index: 30; display: grid; place-items: center;
+  background: rgba(0,0,0,0.88); cursor: zoom-out; transition: opacity 0.3s;
+}
+#lightbox.hidden { opacity: 0; pointer-events: none; }
+#lightbox img { max-width: 94vw; max-height: 94vh; box-shadow: 0 10px 40px #000; }
+#toast {
+  position: fixed; left: 50%; top: 16px; transform: translateX(-50%); z-index: 40;
+  background: var(--paper); color: var(--ink); font-size: 14px;
+  padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity 0.4s;
+  pointer-events: none; max-width: calc(100vw - 32px);
+}
+#toast.on { opacity: 1; }
+
+@media (max-width: 640px) {
+  #minimap { width: 130px; height: 130px; }
+  #mapToggle { top: 118px; }
+  .ap-photo img { max-width: 44vw; max-height: 30vh; }
+  .pos-dreapta { top: 140px; }
+  .pos-dreapta.ap-photo img { max-width: 134px; }
+  .pos-dreapta-sus { right: 146px; }
+  #controls { gap: 4px; padding: 0 8px; }
+  #distLabel { display: none; }
+  .card-media img { height: 150px; }
+}

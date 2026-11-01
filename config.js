@@ -2,7 +2,7 @@
 window.CONFIG = {
   "titlu": "Ioanid · Icoanei · Cărturești · Ateneu",
   "subtitlu": "hartă de observație — o plimbare",
-  "googleApiKey": "AIzaSyBuIarpsQLRA-J8gGCtIvOGdj1Ikk6Zzw4",
+  "googleApiKey": "",
   "durataTotala": 220,
   "durataCadru": 5,
   "zoomLent": true,

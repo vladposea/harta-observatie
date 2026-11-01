@@ -46,7 +46,9 @@ button { font: inherit; cursor: pointer; }
 #pairImg.on { opacity: 1; }
 #satmap { position: absolute; inset: 0; display: none; filter: saturate(0.85) contrast(1.05); }
 body.nokey #satmap { display: block; }
-body.nokey .frame { display: none; }
+body.nokey #photoBg { z-index: 1; }
+body.nokey .frame { z-index: 2; }
+body.nokey #pairImg { z-index: 3; }
 #overlay {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: contain; opacity: 0; pointer-events: none;

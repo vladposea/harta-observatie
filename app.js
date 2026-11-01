@@ -195,7 +195,7 @@
     let next = null;
     for (let i = items.length - 1; i >= 0; i--) {
       const x = items[i];
-      if (x.kind === "frame") { x.next = next; next = x; if (hasKey) preload(x); }
+      if (x.kind === "frame") { x.next = next; next = x; if (hasKey || x.photo) preload(x); }
     }
     renderTicks();
   }
@@ -261,8 +261,14 @@
   const fA = $("frameA"), fB = $("frameB");
   let front = fA, back = fB, shown = null;
   function updateFrames() {
-    if (!hasKey) return;
     const x = frameAt(time);
+    // fără cheie: pozele mele rămân, iar în rest se vede imaginea din satelit
+    if (!hasKey && !(x && x.photo)) {
+      fA.classList.remove("on"); fB.classList.remove("on");
+      $("photoBg").classList.remove("on"); $("pairImg").classList.remove("on");
+      shown = null;
+      return;
+    }
     if (x && x !== shown && x.cache.state === "ok") {
       back.src = x.cache.src;
       back.style.transform = "scale(1)";
@@ -592,7 +598,7 @@
       if (x.hold) el.dataset.hold = `${x.dur} s`;
       const img = document.createElement("img");
       img.loading = "lazy";
-      if (hasKey) img.src = x.cache ? x.cache.src : x.url;
+      if (x.cache) img.src = x.cache.src;
       img.onerror = () => { img.removeAttribute("src"); img.alt = "fără Street View aici"; };
       const lbl = document.createElement("div");
       lbl.className = "lbl";
